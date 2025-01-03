@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="./TuringMachineDark.png" type="image/x-icon">
+    <title>
+        Turing Machine Project
+    </title>
+</head>
+<body>
+    <header>
+        <h1>
+            Turing Machine Compiler
+        </h1>
+    </header>
+    <nav>
+        <img src="TuringMachineWhite.png" alt="logo">
+        <hr>
+        <ul>
+            <li><a href="./index.html">Project main page</a></li>
+            <li><a href="./tmi.html">TM Instructions (.tmi)</a></li>
+            <li><a href="./tms.html">TM Script (.tms)</a></li>
+            <li><a href="./emulator.html">TM Emulator</a></li>
+            <li class="disc">TM Compiler:<li>
+            <li><a href="#user-guide" class="in-page-1">User guide</a></li>
+            <li><a href="#developer-guide" class="in-page-1">Developer guide</a></li>
+            <li><a href="#tokenization" class="in-page-2">Tokenization</a></li>
+            <li><a href="#call-matching" class="in-page-2">Call matching</a></li>
+            <li><a href="#function-parsing" class="in-page-2">Function parsing</a></li>
+            <li><a href="#instruction-parsing" class="in-page-2">Instruction parsing</a></li>
+        </ul>
+    </nav>
+    
+    <h3>What is it</h3>
+    <p>
+        Turing machine compiler is a program that compiles
+        <a href="./tms.html">TM Script</a> to <a href="./tmi.html">TM Instructions</a>.
+        It runs in Python. If you are looking for documentation
+        <a href="#developer-guide">skip to here</a>.
+    </p>
+    <h2 id="user-guide">User guide</h2>
+    <h4>How to compile your turing machine program</h4>
+    <p>
+        Unless you have a .tms program, create one. You can learn about it
+        <a href="tms.html">here</a>. 
+        
+        Run the program by <code>tm_compiler.py [args]</code>.
+
+        The compilers takes in only two optional arguments:
+    </p>
+    <ul>
+        <li>(optional positional)<code>input_file_name</code></li>
+        <li>(optional)<code>-o output_file_name</code></li>
+    </ul>
+    <p>
+        Each of these will tell the compiler where to get the file from and what
+        file to create. If you do not specify input file, it will ask you for one.
+        If you do not specify output file, it will create the file in the same directory
+        as the input file, with the same name, but with .tms file extension.<br>
+        All other information for the compiler is passed through
+        <a href="./tms.html#flags">.tms flags</a>.
+    </p>
+    
+    <h2 id="developer-guide">Developer guide</h2>
+    <p>
+        The entire compiler is inside a single file. It calls <em>main</em> function.
+        All functions try to take a "soft error" approach. Bad practice code is warned about.
+        The program terminates when it encounters an unfixable issue,
+        but it does not throw errors, rather errors are handled inside the fmain function.
+        If a function encounters a unfixable issue, it return None or ttype.ERROR. The only
+        exception is matched_funcs, whose entire purpose is checking correctness.
+        Thus it returns a bool.
+    </p>
+    <h4 id="runtime-pipeline">Runtime pipeline:</h4>
+    <ol>
+        <li>Process the input</li>
+        <li>Load .tms file</li>
+        <li><a href="#tokenization">Tokenize the entire file</a></li>
+        <li>Delete syntax tokens (if syntax was an issue, it popped up during tokenization)</li>
+        <li><a href="#call-matching">Match all functions found to a definition</a></li>
+        <li><a href="#function-parsing">Parse functions into groups of tokens</a></li>
+        <li><a href="#instruction-parsing">Convert functions into instructions</a></li>
+        <li>Print instructions</li>
+    </ol>
+    <h3 id="process">The process</h3>
+    <h4 id="tokenization">Tokenization</h4>
+    <p>
+        The compiler uses regex matches to find all possible tokens. It then
+        asseses what type these tokens are (syntax, calls, etc.) and makes a simple semantic
+        check whether the tokens are in a correct order. It takes into account what the previous
+        tokens were to get the full picture. It does <strong>not</strong> check whether functions
+        are reasonably defined. That job is for the <a href="#function-match">function match</a>
+        and <a href="#function-parsing">function parsing</a>.
+    </p>
+    <h4 id="call-matching">Call matching</h4>
+    <p>
+        It takes in the tokens from the tokenization process and parses each function into
+        a group of tokens that internaly already exactly define its behaviour. Firstly, it
+        puts all definitions in a set, then it goes through each function call and makes sure
+        that it has a definition in the same name.
+    </p>
+    <h4 id="function-parsing">Function parsing</h4>
+    <p>
+        At this stage, all tokens get grouped into functions defined in the <em>Tokenized_func</em>
+        class. Now each function is up for scrutiny and it has to be properly defined to get parsed.
+        If a function does not properly define its behaviour, the compiler terminates. It also
+        disassembles function repetition into repeated calls so that it is easier to be parsed.
+    </p>
+    <h4 id="instruction-parsing">Instruction parsing</h4>
+    <p>
+        It takes in functions in the form of token groups and gives each definition an id.
+        The id basically corresponds to the state that the final .tmi file will have it at.
+        Functions get parsed yet again, now into instructions that it defines.
+        That it runs through each function call. If the function call is final, it is matched
+        to the id of its definition. Otherwise it creates a function that is "signed" with
+        its caller chain (functions that called it) and gives it an id. This goes on until
+        it terminates on a final call of which it gets the next id. This goes on until
+        every function and overridden call has its instruction and call ids.
+    </p>
+</body>
+</html>

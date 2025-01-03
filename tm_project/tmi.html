@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="./TuringMachineDark.png" type="image/x-icon">
+    <title>
+        TMI formatting
+    </title>
+</head>
+<body>
+    <header>
+        <h1>Turing Machine Instructions</h1>
+    </header>
+    <nav>
+        <img src="TuringMachineWhite.png" alt="logo">
+        <hr>
+        <ul>
+            <li><a href="./index.html">Project main page</a></li>
+            <li class="disc">TM Instructions (.tmi):</li>
+            <li><a href="#format" class="in-page-1">Format</a></li>
+            <li><a href="#instruction-encoding" class="in-page-2">Instruction encoding</a></li>
+            <li><a href="#line-format" class="in-page-2">Line format</a></li>
+            <li><a href="#blank-encoding" class="in-page-2">Blank encoding</a></li>
+            <li><a href="#flags" class="in-page-1">Flags</a></li>
+            <li><a href="#flag-list" class="in-page-2">Flag list</a></li>
+            <li><a href="./tms.html">TM Script (.tms)</a></li>
+            <li><a href="./emulator.html">TM Emulator</a></li>
+            <li><a href="./compiler.html">TM Compiler</a></li>
+        </ul>
+    </nav>
+
+    <h3>What are they</h3>
+    <p>
+        Turing Machine Instructions (tmi for short) are the "machine code" of the
+        <a href="./emulator.html">TM emulator</a>.
+        They specify what the machine is suppose to be doing and when.
+        Under the hood, they are just a glorified text file, so any text editor
+        can be used to create and modify them.
+        Unlike <a href="./tms.html">TM script</a>, it is designed
+        to be easily parsed, not easily programmed. Nontheless it can definitely
+        be used to program the turing machine, though its structure makes it harder
+        than it needs to be.
+    </p>
+
+    <h2 id="format">Format</h2>
+    <p>
+        Each state has its own line in the file,
+        with the state number 'n' having its
+        instructions on line 'n'. Only exception
+        to this is state 0, which is reserved for halting.
+    </p>
+    <ul>
+        <li>Keep in mind that the machine writes,
+            then moves/halts, then changes to another state
+        </li>
+    </ul>
+    <h3 id="instruction-encoding">Instruction encoding</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>char</th>
+            <th>writes</th>
+            <th>movement/action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>l</td>
+            <td>0</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>L</td>
+            <td>1</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>r</td>
+            <td>0</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>R</td>
+            <td>1</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>h</td>
+            <td>0</td>
+            <td>halts</td>
+        </tr>
+        <tr>
+            <td>H</td>
+            <td>1</td>
+            <td>halts</td>
+        </tr>
+        <tr>
+            <td>&gt;</td>
+            <td>keep</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>&lt;</td>
+            <td>keep</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>#</td>
+            <td>keep</td>
+            <td>halts</td>
+        </tr>
+        </tbody>
+    </table>
+    
+    <h3 id="line-format">Line format</h3>
+    <p>
+        Each line (except for <a href="#flags">flag line</a>)
+        has the following format:
+    </p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>char[0]</th>
+                <th>char[1]</th>
+                <th>char[3:n]</th>
+                <th>char[(n+2):m]</th>
+                <th>char[k:]</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="centered">
+                <td colspan="2" class="centered">instruction</td>
+                <td colspan="2">next state</td>
+                <td rowspan="2">comment</td>
+            </tr>
+            <tr>
+                <td>if 0</td>
+                <td>if 1</td>
+                <td>if 0</td>
+                <td>if 1</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <blockquote>
+        <p>Example hypothetical of line 5: </p>
+        <p><code>rR 5/10 Move to the right until 1</code></p>
+        <hr>
+        <p>If symbol on tape is 0:</p>
+        <ol>
+            <li>write 0</li>
+            <li>move right</li>
+            <li>change state to 5</li>
+        </ol>
+        <p>If symbol on tape is 1:</p>
+        <ol>
+            <li>write 1</li>
+            <li>move right</li>
+            <li>change state to 10</li>
+        </ol>
+        <p>&quot;Move to the right until 1&quot; would be interpreted as a comment</p>
+    </blockquote>
+
+    <h3 id="blank-encoding">Blank encoding</h3>
+    <p>
+        <a href="./emulator.html">TM emulator</a> allows encoding a blank
+        symbol seperate from 0 and 1. It encodes it as following:
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Original</th>
+                <th>Encoded as</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>11</td>
+            </tr>
+            <tr>
+                <td>blank</td>
+                <td>00</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2 id="flags">Flags</h2>
+    <p>
+        Flags are exclusively on the <strong>last line</strong> of
+        the instruction file. They pass on vital information
+        for the emulator to process the machines output correctly.
+        Since the tape can change scale in both directions,
+        it is uncertain how to interpret the output data.
+        If your program scales to the right exclusively,
+        these flags should not be nessesary,
+        but could be useful shortcuts.
+        Most of these flags have their
+        <a href="./tms.html#flags">.tms counterparts</a>.
+    </p>
+    <h4 id="flag-list">Flag list:</h4>
+    <ul>
+        <li><strong>#iterLimit=uint</strong>
+            <ul>
+            <li>
+                how many times should the machine
+                iterate before outputing its data
+            </li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default, there is no limit</li>
+            </ul>
+        </li>
+        <li><strong>#startOnBit=uint</strong>
+            <ul>
+            <li>on which bit should the program start
+                (in case of left padding, which bit of
+                the original data)
+            </li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#defaultState=uint</strong>
+            <ul>
+            <li>which state is the default</li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#inputFormat=arg</strong>
+            <ul>
+            <li>how to interpret input</li>
+            <li>supported input types (and valid arg):
+                <ul>
+                <li><em>bin</em> - file</li>
+                <li><em>txt</em> - file</li>
+                <li><em>cli</em> - console input</li>
+                </ul>
+            </li>
+            <li>
+                other than NULL at the end of <em>txt</em> 
+                the only real difference between <em>bin</em>
+                and <em>txt</em> is CRLF in <em>bin</em>
+                instead of LF in <em>txt</em> (on Windows)
+            </li>
+            <li>cli takes the input straight from the console</li>
+            <li>
+                by default the user will be put in a cli interface to 
+                input either a file or command-line input. 
+            </li>
+            </ul>
+            </li>
+        <li><strong>#outputFormat=arg</strong>
+            <ul>
+            <li>in what format to output the tape</li>
+            <li>supported input types (and valid arg):
+                <ul>
+                <li><em>bin</em> - file</li>
+                <li><em>txt</em> - file</li>
+                <li><em>cli</em> - console output</li>
+                </ul>
+            </li>
+            <li>bin will output the tape 1:1 as is if #deleteNullBytes is set to 0</li>
+            <li>
+                txt will output the tape as if it were a
+                single string (it will terminate on a null
+                byte or at the end)
+            </li>
+            <li>
+                cli will print the tape to console as a single
+                string (same as <em>txt</em>)
+            </li>
+            <li>
+                by default the user will be put in a cli interface to 
+                specify output location. 
+            </li>
+            </ul>
+        </li>
+        <li><strong>#leftPadding=uint</strong>
+            <ul>
+            <li>how many 0 bytes should be added to the left side of the tape</li>
+            <li>output will be offset by <em>uint</em> amount of bytes
+                <ul>
+                <li>is additive with <em>#outputBitOffset</em></li>
+                </ul>
+            </li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#rightPadding=uint</strong>
+            <ul>
+            <li>how many 0 bytes should be added to the right side of the tape</li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#outputFromHead=bool</strong>
+            <ul>
+            <li>starts reading tape from the head</li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to false</li>
+            </ul>
+        </li>
+        <li><strong>#encodesBlank=bool</strong>
+            <ul>
+            <li>
+                any input (without padding) will be
+                reinterpreted as 0s and 1s in 
+                <a href="emulator.html#blank-encoding">
+                this system</a>.
+            </li>
+            <li>
+                padding will be interpreted as blank symbols
+                (and effectively doubled in size)
+            </li>
+            <li>
+                output will start reading at the first non-blank
+                symbol on tape, unless #outputFromHead=1
+            </li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to false</li>
+            </ul>
+        </li>
+        <li><strong>#deleteNullBytes=bool</strong>
+            <ul>
+            <li>
+                every null byte from the left and right
+                of the tape until the first non-null byte
+                will get cropped and discarded when outputting
+                the file.
+            </li>
+            <li>
+                If you do not want extra null bytes, yet you want those you
+                put in through input, I suggesting keeping it as is, insert
+                padding and modify the program to not surpass the padding.
+            </li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to true</li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>

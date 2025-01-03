@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="./TuringMachineDark.png" type="image/x-icon">
+    <title>
+        Turing Machine Project
+    </title>
+</head>
+<body>
+    <header>
+        <h1>
+            Turing Machine Emulator
+        </h1>
+    </header>
+    <nav>
+        <img src="TuringMachineWhite.png" alt="logo">
+        <hr>
+        <ul>
+            <li><a href="./index.html">Project main page</a></li>
+            <li><a href="./tmi.html">TM Instructions (.tmi)</a></li>
+            <li><a href="./tms.html">TM Script (.tms)</a></li>
+            <li class="disc">TM Emulator:</li>
+            <li><a href="#user-guide" class="in-page-1">User guide</a></li>
+            <li><a href="#debug-mode" class="in-page-2">Debug mode</a></li>
+            <li><a href="#problems" class="in-page-2">Problems</a></li>
+            <li><a href="#arguments" class="in-page-2">Program arguments</a></li>
+            <li><a href="#developer-guide" class="in-page-1">Developer guide</a></li>
+            <li><a href="#tm_emulator.cpp" class="in-page-2">tm_emulator.cpp</a></li>
+            <li><a href="#tm_codec.cpp" class="in-page-2">tm_codec.cpp</a></li>
+            <li><a href="#blank-encoding" class="in-page-2">blank encoding</a></li>
+            <li><a href="#file_handler.cpp" class="in-page-2">file_handler.cpp</a></li>
+            <li><a href="./compiler.html">TM Compiler</a></li>
+        </ul>
+    </nav>
+    <h3>What is it</h3>
+    <p>
+        Turing machine emulator is a program that emulates a turing machine.
+        It takes in a program in the form of a
+        <a href="./tmi.html">.tmi file</a> and runs the program on a specified
+        input.
+    </p>
+    <h2 id="user-guide">User guide</h2>
+    <h4>How to build tm_emulator.exe</h4>
+    <p>
+        If you want to build the emulator, you need a compiler for C++ 11 or higher.
+        Put all emulator files (every .cpp and .hpp file from project/tm_emulator directory)
+        in a single directory. Then compile the program linking all <em>.cpp</em> and <em>.hpp</em> files and
+        specify output to be <em>tm_emulator.exe</em>.
+        For gcc's default Windows installation location, move to the directory with the emulator files and specify the following:<br>
+        <code>C:\msys64\ucrt64\bin\g++.exe -g *.cpp *.hpp -o tm_emulator.exe</code><br>
+        If you need further help with compiling,
+        <a href="https://www.tutorialspoint.com/how-to-compile-and-run-the-cplusplus-program">here is a guide</a>
+    </p>
+    <h4>How to run a turing machine program</h4>
+    <p>
+        Unless you have a .tmi program, you have to create one. You can use
+        <a href="./tms.html">TM Script</a> to encode the instructions
+        and <a href="./compiler.html">TM Compiler</a> to compile it to .tmi
+        or you can directly code in .tmi, though it is arguably harder.
+        <br>
+        If you aready have a .tmi program, either select to open the program with
+        tm_emulator.exe, or run the .exe file and specify it in the CLI or
+        you can specify it in the <a href="#arguments">program arguments</a> by:<br>
+        <code>tm_emulator.exe program_name_or_location.tmi -(optional)arguments</code>.<br>
+        If the program takes in a CLI input, it will ask you for one. If it does not, you can specify input
+        and output files with program arguments as well.
+    </p>
+
+    <h3 id="debug-mode">Debug mode</h3>
+    <p>
+        TM Emulator has a debug mode, that will print the tape's previous, current and
+        following byte relative to the head location. It will also print the exact head
+        location, current state, comment on that state, and instruction that is about to
+        happen.<br>
+        To enable it, either add <code>-d</code> to launch arguments.<br>
+        For a line 5<code>R# 2/0 //set bit to 1 if 0, otherwise halt</code> the print could look like this:
+    </p>
+    <pre>
+--------------------------
+Surrounding bytes:
+00000000 00000000 10101010
+            ^
+[instruction in state 5]:
+action if 0/1: R/#
+ state if 0/1: 2/0
+      comment: //set bit to 1 if 0, otherwise halt
+
+next action, state: R, 2
+    </pre>
+
+    <h3 id="problems">Common problems:</h3>
+    <h4>Output is messed up</h4>
+    <p>
+        If you have trouble with the output, you should use flags to tell the emulator
+        how to interpret the output correctly. By default the compiler erases null bytes
+        from both sides of the tape until it finds a single non-null byte.
+    </p>
+    <ul>
+        <li>If you program directly in .tmi, you can find the flags <a href="./tmi.html#flags">here</a></li>
+        <li>If you program in TM Script, you can find the flags <a href="./tmi.html#flags">here</a></li>
+    </ul>
+    <h4>Program terminated when it wasn't supposed to</h4>
+    <p>
+        This problem probably has one of these two causes:
+    </p>
+    <ol>
+        <li>The program reached its iteration limit</li>
+        <li>The program is incorrect</li>
+    </ol>
+    <p>
+        If you are certain the program is correct, increase or erase the iteration limit using the flags:
+    </p>
+    <ul>
+        <li><code>#iterLimit = N</code> in TM Script</li>
+        <li><code>#iterLimit=N</code> in TM Instructions</li>
+    </ul>
+    <p>
+        The limit is set to 100 million by default, so N has to be larger than that, or erase it completely with N = -1.<br>
+        If that doesn't work, enter debug mode with launch argument <code>-d</code> in launch parameters.
+        If the program is correct, and either the compiler or emulator interpreted it incorrectly, please contact project owner.
+    </p>
+    <h4>Input got messed up</h4>
+    <p>
+        You might have accidentaly turned on blank encoding. Please make sure that the
+        <a href="./tmi.html#flags">blank-encoding flag</a> is turned off.
+        If you did want <a href="#blank-encoding">blank encoding</a>,
+        make sure you program accounts for it correctly.
+        If the problem still remains, please contact project owner.
+    </p>
+
+    <h3 id="arguments">Program arguments</h3>
+    <p>
+        Program takes in a positional argument with the .tmi file it is to run
+        like so: <code>tm_emulator.exe example.tmi</code>.
+        Program also takes in multiple optional arguments.
+    </p>
+    <table>
+        <thead>
+        <tr>
+            <th>argument name</th>
+            <th>short</th>
+            <th>parameters</th>
+            <th>function</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>--help</td>
+            <td>-h</td>
+            <td></td>
+            <td>Prints all program arguments and help guide</td>
+        </tr>
+        <tr>
+            <td>--input</td>
+            <td>-i</td>
+            <td>file_path</td>
+            <td>
+                Input filepath that the program will use.
+                If input was set by <a href="./tmi.html#flags">.tmi input flag</a>
+                as command line, it will override the flag and take in the file as txt. 
+            </td>
+        </tr>
+        <tr>
+            <td>--output</td>
+            <td>-o</td>
+            <td>file_path</td>
+            <td>
+                Output filepath that the program will use.
+                If ouput was set by <a href="./tmi.html#flags">.tmi ouput flag</a>
+                as command line, it will output both to the console and write the file.
+            </td>
+        </tr>
+        <tr>
+            <td>--debug</td>
+            <td>-d</td>
+            <td></td>
+            <td>Launches the program in debug mode.</td>
+        </tr>
+        </tbody>
+    </table>
+    
+    <h2 id="developer-guide">Developer guide</h2>
+    <p>
+        The core of the turing machine is entirely inside <em>tm_emulator.exe</em>.
+        Anything file related (input, output, format translating) can be found
+        inside of <em>file_handler.cpp</em>. Flags, data encoding and decoding, tape
+        interpretation resides in <em>tm_codec.cpp</em>. All exported function have their
+        declaration inside of related .hpp files.<br>
+    </p>
+    <h4 id="runtime-pipeline">Runtime pipeline:</h4>
+    <ol>
+        <li><strong>Program input and flag parsing</strong> - tm_emulator::ParseInstructionFile()</li>
+        <li><strong>Data input</strong> - tm_emulator & file_handler</li>
+        <li><strong>Data encoding</strong> - tm_codec::EncodeInput()</li>
+        <li><strong>TuringMachine initialization</strong> - tm_emulator::TuringMachine</li>
+        <li><strong>TuringMachine runtime</strong> - tm_emulator::TuringMachine::RunUntilHalt()</li>
+        <li><strong>Halt &gt; tape decoding</strong> - tm_codec::DecodeInput()</li>
+        <li><strong>Data output</strong> - tm_emulator & file_handler</li>
+    </ol>
+    <h3 id="tm_emulator.cpp">tm_emulator.cpp</h3>
+    <h4 id="turingmachine-operation">TuringMachine operation</h4>
+    <p>
+        <em>TuringMachine</em> class consists of all methods needed to run it. It takes in a program,
+        some data, runs the machine and outputs it after halting.
+        Its tape is stored in a seperate <em>Tape</em> class that stores vital information for correct
+        runtime of the machine. The tape also has methods to manage itself, though they are called
+        by the TuringMachine class on iteration if needed. Thus the machine itself takes care of the tape,
+        and the Tape class essentially exists just to make the enormous TuringMachine class somewhat smaller.
+        Because of tapes dynamic size, it unfortunately cannot get stored on the stack.
+        Instruction encoding is the same as <a href="./tmi.html#instruction-encoding">.tmi's instructions</a>.
+    </p>
+    <h4 id="instruction-encoding">Instruction encoding</h4>
+    <table>
+        <thead>
+        <tr>
+            <th>char</th>
+            <th>writes</th>
+            <th>movement/action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>l</td>
+            <td>0</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>L</td>
+            <td>1</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>r</td>
+            <td>0</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>R</td>
+            <td>1</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>h</td>
+            <td>0</td>
+            <td>halts</td>
+        </tr>
+        <tr>
+            <td>H</td>
+            <td>1</td>
+            <td>halts</td>
+        </tr>
+        <tr>
+            <td>&gt;</td>
+            <td>keep</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>&lt;</td>
+            <td>keep</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>#</td>
+            <td>keep</td>
+            <td>halts</td>
+        </tr>
+        </tbody>
+    </table>
+    <h4 id="turingmachine-iteration">TuringMachine iteration</h4>
+    <p>
+        Each iteration has the same steps:
+    </p>
+    <ol>
+        <li>If caution triggered, expand the tape</li>
+        <li>Store symbol on head</li>
+        <li>Perform instruction</li>
+        <li>Update state</li>
+        <li>Make sure head is inside current tape size, if not trigger caution</li>
+        <li>Check whether iteration limit is reached (if so, halt)</li>
+    </ol>
+    <h3 id="tm_codec.cpp">tm_codec.cpp</h3>
+    <h4>Encoding</h4>
+    <p>
+        When the emulator gets input, it is passed to the codec. The codec also gets
+        <a href="./tmi.html#flags">flags</a> that are parsed from the instruction file.
+        Using these flags, it encodes the data accordingly and returns it back to the
+        emulator, which will pass it directly to the TuringMachine.
+    </p>
+    <h4>Decoding</h4>
+    <p>
+        When the emulator gets the machine's output, it is passed to the codec. The codec also gets
+        <a href="./tmi.html#flags">flags</a> that were parsed from the instruction file.
+        Using these flags, it decodes the data as desired by the program and returns it back to the
+        emulator, which will decide where to put it.
+    </p>
+    <h4 id="blank-encoding">Blank encoding</h4>
+    <p>
+        Turing machine emulator allows for encoding a seperate blank symbol from
+        0 or 1. It has no additional support in the compiler (or TM script), other than 
+        <a href="./tms.html#flags">being a flag</a>. The codec encodes each bit as following:
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Original</th>
+                <th>Encoded as</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>0</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>11</td>
+            </tr>
+            <tr>
+                <td>blank</td>
+                <td>00</td>
+            </tr>
+            <tr>
+                <td>undefined symbol (optional)</td>
+                <td>01</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        If you desire another symbol on the tape that has nothing to do with actual data on the tape
+        you can interpret 01 symbol as you please. Just beware that it is considered undefined
+        behavior. It will not crash the program in any way, but may cause decoding issues.
+        I suggest using these combined with blank as flags (where blank is 0, the other is 1).
+        This allows for 2 pow n flags in 2n tape cells.
+    </p>
+    <p>
+        When a tape is expanded, it gets automatically expanded to blank symbols. The tape accounts
+        for the fact that the tape it is blank encoded and expands in even number of bytes.
+        When the codec gets the data from the tape, it assumes that each byte starts on an even index
+        (starting with 0) and ends on a odd index. The even part of the byte is the more significant half.
+        The codec also assumes that any non-blank byte is a valid byte, meaning that if it has at least a single
+        valid bit, it will be the starting/ending point for decoding.
+    </p>
+    <h3 id="file_handler.cpp">file_handler.cpp</h3>
+    <p>
+        It handles all file input, output and translation needed for the machine and codec to process
+        it. If you want to expand the machine to be able to process more formats than binary and txt,
+        this is the place where to put your code.
+    </p>
+</body>
+</html>

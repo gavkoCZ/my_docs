@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="./TuringMachineDark.png" type="image/x-icon">
+    <title>
+        Turing Machine Script
+    </title>
+</head>
+<body>
+    <header>
+        <h1> Turing Machine Script </h1>
+    </header>
+    <nav>
+        <img src="TuringMachineWhite.png" alt="logo">
+        <hr>
+        <ul>
+            <li><a href="./index.html">Project main page</a></li>
+            <li><a href="./tmi.html">TM Instructions (.tmi)</a></li>
+            <li class="disc">TM Script (.tms):</li>
+            <li><a href="#features" class="in-page-1">Features</a></li>
+            <li><a href="#syntax" class="in-page-1">Basic syntax</a></li>
+            <li><a href="#instruction-encoding" class="in-page-2">Instruction encoding</a></li>
+            <li><a href="#syntax-tokens" class="in-page-2">Syntax tokens</a></li>
+            <li><a href="#defining-function" class="in-page-1">Defining functions</a></li>
+            <li><a href="#chaining-syntax" class="in-page-2">Chaining syntax</a></li>
+            <li><a href="#repetition-syntax" class="in-page-2">Repetition syntax</a></li>
+            <li><a href="#flags" class="in-page-1">Flags</a></li>
+            <li><a href="#flaglist" class="in-page-2">Flaglist</a></li>
+            <li><a href="./emulator.html">TM Emulator</a></li>
+            <li><a href="./compiler.html">TM Compiler</a></li>
+        </ul>
+    </nav>
+
+    <h3>What is it</h3>
+    <p>
+        Turing Machine Script (tms for short) is a scripting language that
+        allows for readable programing of 
+        <a href="./emulator.html">TM emulator</a>.
+        Under the hood, it is a glorified text file, so any text editor
+        can be used to create and modify it. It uses standard utf-8 encoding.
+        It is compiled by a <a href="./compiler.html">TM compiler</a>
+        into <a href="./tmi.html">.tmi</a> "machine code".
+        States are obsolete in .tms, it uses functions instead.
+        These functions can be (repeatedly) called,
+        chained and their function calls can be overriden.
+    </p>
+
+    <h2 id="features">Features</h2>
+    <h3 id="functions">Functions</h3>
+    <p>
+        Instruction-wise functions are just states with aliases
+        attached to them. This means that instead of specifying
+        the next state, you specify next function (make a call).
+    </p>
+    <ul>
+        <li>
+            <a href="#basic-syntax">Learn more</a> 
+            about syntax.
+        </li>
+    </ul>
+    
+    <h3 id="chaining">Function chaining</h3>
+    <p>
+        Chaining means putting followups in order that
+        they should be called while overriding each
+        followup's followups with their successor that
+        has their followups overridden or not.
+    </p>
+    <ul>
+        <li>
+            <a href="#chainging-syntax">Learn more</a> 
+            about syntax.
+        </li>
+    </ul>
+
+    <h3 id="calls-repetition">Function calls &amp; repetition</h3>
+    <p>
+        Calls are just changes in state.
+        The only exception being repetitive calling.
+        A function can be called multiple times before
+        changing to next function by using 
+        <a href="#repetition-syntax">this format</a>.
+        This effectively chains the function repeatedly
+    </p>
+    
+    <h3 id="blank">Blank encoding</h3>
+    <p>
+        <a href="./tmi.html">tmi</a>
+        offers a way to encode a third symbol 
+        into the machine. The program will work as if there
+        were no differences except defined cases where the
+        program enters into a space with no symbols on tape.
+    </p>
+
+    <hr>
+    <h1 id="syntax">TMS syntax</h1>
+    <h3 id="instruction-encoding">Instruction encoding</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>char</th>
+            <th>writes</th>
+            <th>movement/action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>l</td>
+            <td>0</td>
+            <td rowspan="2">left</td>
+        </tr>
+        <tr>
+            <td>L</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>r</td>
+            <td>0</td>
+            <td rowspan="2">right</td>
+        </tr>
+        <tr>
+            <td>R</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>h</td>
+            <td>0</td>
+            <td rowspan="2">halts</td>
+        </tr>
+        <tr>
+            <td>H</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>&lt;</td>
+            <td rowspan="3">keep</td>
+            <td>left</td>
+        </tr>
+        <tr>
+            <td>&gt;</td>
+            <td>right</td>
+        </tr>
+        <tr>
+            <td>#</td>
+            <td>halt</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3 id="syntax-tokens">Syntax tokens</h3>
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2">Syntax tokens</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>=</td>
+            <td>marks a single line definition</td>
+        </tr>
+        <tr>
+            <td>{</td>
+            <td>marks the start of a function definition</td>
+        </tr>
+        <tr>
+            <td>}</td>
+            <td>marks the end of a function definition</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>condition for the following behaviour</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>condition for the following behaviour</td>
+        </tr>
+        <tr>
+            <td>:</td>
+            <td>seperates condition and its action</td>
+        </tr>
+        <tr>
+            <td>,</td>
+            <td>seperates function calls, <a href="#chaining-syntax">learn more</a></td>
+        </tr>
+        <tr>
+            <td>(n)</td>
+            <td>repeats the call n times, <a href="#repetition-syntax">learn more</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <h2 id="defining-function">Defining functions</h2>
+    <p>
+        All function names must satisfy regex <code>\w+</code> format.<br>
+        Functions can have 2 formats:
+    </p>
+    <ol>
+        <li><a href="#single-line">Single-line</a></li>
+        <li><a href="#multi-line">Multi-line</a></li>
+    </ol>
+    <p>
+        Each function must specify its action and call(s)
+        for all possible symbols on tape.  
+        In the following "action" is encoding in instructions
+        and "condition" is the symbol on tape or
+        a universal condition 'x'.  
+        Instruction is specified with <a href="#instruction-encoding">this table</a><br>
+    </p>
+
+
+    <h4 id="single-line">Single-line formatting</h4>
+    <p>
+        In the following "..." denotes optional
+        chaning/repetition.
+    </p>
+    <ul>
+        <li>
+            <strong>Format:</strong><br>
+            <code>func_name = action_for_both func_call...;</code>
+        </li>
+        <li>
+            You have an option to seperate '='
+            from surrounding elements using space
+        </li>
+        <li>
+            Any space can expaned, but must remain
+            on a single line
+        </li>
+        <li>
+            ';' can be omitted but is highly recommended
+        </li>
+        <li>
+            You can also use "//" as and end of line element
+        </li>
+        <li>
+            <strong>Example:</strong><br>
+            <code>skip_right = > skip_right;</code>
+            <ul>
+                <li>
+                    This function would move
+                    infinitely to the right
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h4 id="multi-line">Multi-line formatting</h4>
+    <p>
+        In the following "..." denotes optional
+        chaining/repetition in a branch and optional 
+        additional branches in the function.
+        <br>Any '-' in the following is an optional
+        whitespace of any kind.
+        <br>Multi-line formatting doesn't have to be used
+        exclusively with multiple lines. It can be put in a
+        single line, but it allows for multiple lines.
+    </p>
+    <ul>
+        <li>
+            <strong>Format:</strong>
+            <ul>
+                <li>Branches:<br>
+                    <code>
+                        condition: action_if_this func_call...;
+                    </code>
+                </li>
+                <li>Functions:<br>
+                    <code>
+                        func_name-{-branch-...-}
+                    </code>
+                    <ul>
+                        <li>
+                        If multiple branches are on a single
+                        line, all of them must be seperated using ';'
+                        </li>
+                    </ul>
+                    
+                </li>
+            </ul>
+        </li>
+        <li>
+            <strong>Example:</strong><br>
+<pre>halt_if_0 {
+    0: # halt;
+    1: > halt_if_0;
+}</pre>
+            <ul>
+                <li>
+                    This function would move infinitely to the
+                    right unless it finds a zero. If it does, it halts
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3 id="chaining-syntax">Chainging syntax</h3>
+    <p>
+        Chainging is part of a branch specification. If you want to chain functions so that
+        the first function's call is overridden, you add <code>, </code> and the next call.
+    </p>
+    <ul>
+        <li><strong>Example:</strong><br>
+<pre> my_func {
+    0: > just_next_func;
+    1: > func_to_be_overriden, overrider, next_overrider, final_func;
+}</pre>
+        </li>
+    </ul>
+    <p>
+        <em>func_to_be_overriden</em>, <em>overridder</em> and <em>next_overrider</em> will have
+        their calls overriden and will get executed in the order they are written in.
+        <em>final_func</em> <strong>will not</strong> have its calls overridden, so calls specified in that
+        function will be the one that will follow.
+    </p>
+
+    <h3 id="repetition-syntax">Repetition syntax</h3>
+    <p>
+        Repetition is part of branch specification. It is right after a function call to be exact.
+        If you want to chain a function many times without becoming an eye sore and going out of screen
+        you can repeat it using <code>(N)</code> where N is the amount of times the function is to be
+        executed. E.g. (1) is the same as writing no repetition.
+    </p>
+    <ul>
+        <li><strong>Example:</strong><br>
+<pre>my_func {
+    0: > no_repetition(1);
+    1: > repeat_thrise(3);
+}
+
+my_func2 {
+    0: > no_repetition;
+    1: > repeat_thrise, repeat_thrise, repeat_thrise;
+}</pre>
+        </li>
+    </ul>
+    <p>
+        In this example, both functions do <strong>exactly the same</strong>,
+        but one is much more concise.
+        To not confuse, if you specify one repetition, it does not mean you have to specify it
+        for all calls in the same function as it is in the example.
+    </p>
+
+    <h2 id="flags">Flags</h2>
+    <p>
+        Flags must be specified <strong>before the first function</strong>.
+        Only format that they must satisfy is that each flags is on a seperate line.
+        They give the compiler and emulator additional information to interpret their
+        input correctly and to output the data correctly.
+        Most flags are equivalents to
+        <a href="tmi.html#flags">.tmi flags</a>.
+    </p>
+    <h4 id="flaglist">Flag list:</h4>
+    <ul>
+        <li><strong>#comments = bool</strong>
+            <ul>
+            <li>
+                tells the compiler whether to add comment each instruction by
+                the function it was made from. If it is nested inside a call chaining
+                it will comment the call chain it was derived from.
+            </li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to true</li>
+            </ul>
+        </li>
+        <li><strong>#iterLimit = int</strong>
+            <ul>
+            <li>
+                how many times should the machine
+                iterate before outputing its data
+            </li>
+            <li>int is in [0 - INT64_MAX] or -1 for unlimited iteration</li>
+            <li>by default, limit is 100 million (should take bellow 10s to finish)</li>
+            </ul>
+        </li>
+        <li><strong>#startOnBit = uint</strong>
+            <ul>
+            <li>on which bit should the program start
+                (in case of left padding, which bit of
+                the original data)
+            </li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#start = func_name</strong>
+            <ul>
+            <li>which function should be called first</li>
+            <li>func_name is a name of a function definition</li>
+            <li>by default function named "start" is assumed to exist</li>
+            </ul>
+        </li>
+        <li><strong>#inputFormat = arg</strong>
+            <ul>
+            <li>how to interpret input</li>
+            <li>supported input types (and valid arg):
+                <ul>
+                <li><em>bin</em> - file</li>
+                <li><em>txt</em> - file</li>
+                <li><em>cli</em> - console input</li>
+                </ul>
+            </li>
+            <li>
+                other than NULL at the end of <em>txt</em> 
+                the only real difference between <em>bin</em>
+                and <em>txt</em> is CRLF in <em>bin</em>
+                instead of LF in <em>txt</em> (on Windows)
+            </li>
+            <li>cli takes the input straight from the console</li>
+            <li>
+                by default the user will be put in a cli interface to 
+                input either a file or command-line input. 
+            </li>
+            </ul>
+            </li>
+        <li><strong>#outputFormat = arg</strong>
+            <ul>
+            <li>in what format to output the tape</li>
+            <li>supported input types (and valid arg):
+                <ul>
+                <li><em>bin</em> - file</li>
+                <li><em>txt</em> - file</li>
+                <li><em>cli</em> - console output</li>
+                </ul>
+            </li>
+            <li>bin will output the tape 1:1 as is if #deleteNullBytes is set to 0</li>
+            <li>
+                txt will output the tape as if it were a
+                single string (it will terminate on a null
+                byte or at the end)
+            </li>
+            <li>
+                cli will print the tape to console as a single
+                string (same as <em>txt</em>)
+            </li>
+            <li>
+                by default the user will be put in a cli interface to 
+                specify output location. 
+            </li>
+            </ul>
+        </li>
+        <li><strong>#leftPadding = uint</strong>
+            <ul>
+            <li>how many 0 bytes should be added to the left side of the tape</li>
+            <li>output will be offset by <em>uint</em> amount of bytes
+                <ul>
+                <li>is additive with <em>#outputBitOffset</em></li>
+                </ul>
+            </li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#rightPadding = uint</strong>
+            <ul>
+            <li>how many 0 bytes should be added to the right side of the tape</li>
+            <li>uint is in [0 - INT64_MAX]</li>
+            <li>by default set to 0</li>
+            </ul>
+        </li>
+        <li><strong>#outputFromHead = bool</strong>
+            <ul>
+            <li>starts reading tape from the head</li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to false</li>
+            </ul>
+        </li>
+        <li><strong>#encodesBlank = bool</strong>
+            <ul>
+            <li>
+                any input (without padding) will be
+                reinterpreted as 0s and 1s in 
+                <a href="emulator.html#blank-encoding">
+                this system</a>.
+            </li>
+            <li>
+                padding will be interpreted as blank symbols
+                (and effectively doubled in size)
+            </li>
+            <li>
+                output will start reading at the first non-blank
+                symbol on tape, unless #outputFromHead=1
+            </li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to false</li>
+            </ul>
+        </li>
+        <li><strong>#deleteNullBytes = bool</strong>
+            <ul>
+            <li>
+                every null byte from the left and right
+                of the tape until the first non-null byte
+                will get cropped and discarded when outputting
+                the file.
+            </li>
+            <li>
+                If you do not want extra null bytes, yet you want those you
+                put in through input, I suggesting keeping it as is, insert
+                padding and modify the program to not surpass the padding.
+            </li>
+            <li>bool = 0 for false, 1 for true</li>
+            <li>by default set to true</li>
+            </ul>
+        </li>
+    </ul>
+
+</body>
+</html>
