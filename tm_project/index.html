@@ -59,9 +59,10 @@
     <section>
         <h4>Status</h4>
         <p>
-            As of now, this project is not public. It is internal to gitlab.mff.cuni.cz.
-            Charles' University's gitlab does not allow releasing pages, even privately
-            and why specify status when it'll change depending on if and when I get credit.
+            As of now, this project is not public. It is internal to 
+            gitlab.mff.cuni.cz. Unfortunately Charles University's GitLab does
+            not allow releasing pages, even internaly, so html documentation 
+            has to be outsourced to presonal github.
         </p>
     </section>
     </article>
@@ -79,9 +80,13 @@
         with the head at MSb of the first byte.
     </p>
     <ul>
-        <li>Unless you have a <em>tm_emulator.exe</em> file, you have to build it using a a compiler for C++ 17 or higher.</li>
+        <li>Unless you have a <em>tm_emulator.exe</em> file, you have to build it using a a compiler for C++17 or higher.</li>
         <li>Keep in mind, this makes it subject to little-endian missordering</li>
-        <li>You can use <code>tm_emulator.exe --help</code> to get information about launching the program</li>
+        <li>Use <code>tm_emulator.exe</code> to run the program.</li>
+        <li>
+            You can use <code>tm_emulator.exe --help</code> to get information about launching the program
+            or you can <a href="./emulator.html#arguments">find it here</a>
+        </li>
         <li><a href="./emulator.html">Learn more</a></li>
     </ul>
 
@@ -92,15 +97,16 @@
         <a href="./tmi.html">turing machine instruction</a> files.
         Most compilation specifiers are
         <a href="./tms.html#flags">.tms flags</a>.
-        <br><br>The program takes in 2 arguments:
+        <br><br>Launch the program using <code>tm_compiler.py [args]</code>
+        <br>The program takes in 2 arguments:
     </p>
     <ol>
-        <li>filepath to the .tms file to compile</li>
+        <li>(optional positional) <code>input_file</code> to the .tms file to compile</li>
         <li>
-            (optional -d) destination filepath
+            (optional) <code>-o output_file</code> filepath
             to output to. If not specified, it will
             compile to the same directory with the same
-            name as the .tms file
+            name.
         </li>
     </ol>
     <ul>
