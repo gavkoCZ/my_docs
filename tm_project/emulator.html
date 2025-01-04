@@ -75,7 +75,7 @@
         following byte relative to the head location. It will also print the exact head
         location, current state, comment on that state, and instruction that is about to
         happen.<br>
-        To enable it, either add <code>-d</code> to launch arguments.<br>
+        To enable it add <code>-d</code> to launch arguments.<br>
         For a line 5<code>R# 2/0 //set bit to 1 if 0, otherwise halt</code> the print could look like this:
     </p>
     <pre>
@@ -188,7 +188,7 @@ next action, state: R, 2
         Anything file related (input, output, format translating) can be found
         inside of <em>file_handler.cpp</em>. Flags, data encoding and decoding, tape
         interpretation resides in <em>tm_codec.cpp</em>. All exported function have their
-        declaration inside of related .hpp files.<br>
+        declaration inside their related .hpp files.<br>
     </p>
     <h4 id="runtime-pipeline">Runtime pipeline:</h4>
     <ol>
