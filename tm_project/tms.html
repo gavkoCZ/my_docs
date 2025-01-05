@@ -85,14 +85,20 @@
         This effectively chains the function repeatedly
     </p>
     
-    <h3 id="blank">Blank encoding</h3>
+    <h3 id="blank-encoding">Blank encoding</h3>
     <p>
-        <a href="./tmi.html">tmi</a>
+        <a href="./emulator.html">TM Emulator</a>
         offers a way to encode a third symbol 
-        into the machine. The program will work as if there
-        were no differences except defined cases where the
-        program enters into a space with no symbols on tape.
+        into the machine. The program has to account for
+        that fact and define its behaviour over each bit as
+        if it were a pair.
     </p>
+    <ul>
+        <li>
+            <a href="./emulator.html#blank-encoding">Learn more</a> 
+            about blank encoding.
+        </li>
+    </ul>
 
     <hr>
     <h1 id="syntax">TMS syntax</h1>
@@ -197,7 +203,6 @@
         Functions can have 2 formats:
     </p>
     <ol>
-        <li><a href="#single-line">Single-line</a></li>
         <li><a href="#multi-line">Multi-line</a></li>
     </ol>
     <p>
