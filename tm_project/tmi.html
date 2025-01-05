@@ -220,7 +220,8 @@
             <ul>
             <li>on which bit should the program start
                 (in case of left padding, which bit of
-                the original data)
+                the original data, and it accounts
+                for blank encoding)
             </li>
             <li>uint is in [0 - INT64_MAX]</li>
             <li>by default set to 0</li>
@@ -285,13 +286,9 @@
         <li><strong>#leftPadding=uint</strong>
             <ul>
             <li>how many 0 bytes should be added to the left side of the tape</li>
-            <li>output will be offset by <em>uint</em> amount of bytes
-                <ul>
-                <li>is additive with <em>#outputBitOffset</em></li>
-                </ul>
-            </li>
             <li>uint is in [0 - INT64_MAX]</li>
             <li>by default set to 0</li>
+            <li>use to avoid reallocation, e.g. when you access a constant amount of bytes over the input</li>
             </ul>
         </li>
         <li><strong>#rightPadding=uint</strong>
@@ -299,11 +296,12 @@
             <li>how many 0 bytes should be added to the right side of the tape</li>
             <li>uint is in [0 - INT64_MAX]</li>
             <li>by default set to 0</li>
+            <li>use to avoid reallocation, e.g. when you access a constant amount of bytes over the input</li>
             </ul>
         </li>
         <li><strong>#outputFromHead=bool</strong>
             <ul>
-            <li>starts reading tape from the head</li>
+            <li>starts reading the tape from the byte where head ended</li>
             <li>bool = 0 for false, 1 for true</li>
             <li>by default set to false</li>
             </ul>
